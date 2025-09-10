@@ -1,0 +1,13 @@
+<!-- products/templates/products/detal.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalhes do Produto</title>
+</head>
+<body>
+    <h1>{{ object.name }}</h1>
+    <p><strong>Price:</strong> R$ {{ object.price }}</p>
+    <p><strong>Quantity:</strong> {{ object.quantity }}</p>
+    <a href="{% url 'product-list' %}">Voltar à lista</a>
+</body>
+</html>

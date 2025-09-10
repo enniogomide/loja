@@ -1,0 +1,44 @@
+[project]
+name = "loja"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Ennio Gomide",email = "ennio.gomide@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "django (>=5.2.6,<6.0.0)",
+    "pytest (>=8.4.1,<9.0.0)",
+    "pytest-django (>=4.11.1,<5.0.0)",
+    "factory-boy (>=3.3.3,<4.0.0)",
+    "coverage (>=7.10.6,<8.0.0)",
+    "djangorestframework (>=3.16.1,<4.0.0)",
+    "pytest-cov (>=6.2.1,<7.0.0)",
+    "pytest-mock (>=3.14.1,<4.0.0)",
+    "pytz (>=2025.2,<2026.0)"
+]
+
+[tool.poetry]
+packages = [
+    {include = "app", from = "src"},
+    {include = "loja", from = "src"}
+]
+
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.3.0"
+ruff = "^0.12.12"
+
+[tool.ruff]
+line-length = 79
+exclude = ["migrations", "__pycache__"]
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E501"]  # Ignora linha muito longa
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
