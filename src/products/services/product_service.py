@@ -15,7 +15,7 @@ class ProductService:
         return product
 
     def create_product(self, product_data):
-        if product_data['quantity'] < 0:
+        if product_data["quantity"] < 0:
             raise ValueError("Estoque não pode ser negativo")
         return self.repository.create(product_data)
 

@@ -1,9 +1,8 @@
 from django.http import JsonResponse
+from django.shortcuts import render
 # from django.views.generic import ListView, DetailView
 from django.views import View
-from django.shortcuts import render
 
-from .models import Product
 from .services.product_service import ProductService
 
 
@@ -35,7 +34,9 @@ class ProductDetailView(View):
 
     def put(self, request, product_id):
         service = ProductService()
-        data = request.PUT.dict()  # Nota: Django não suporta request.PUT nativamente; use um parser ou request.POST.
+        data = request.PUT.dict()
+        # Nota: Django não suporta request.PUT
+        # nativamente; use um parser ou request.POST.
         product = service.update_product(product_id, data)
         if product:
             return JsonResponse({"message": "Updated successfully"})

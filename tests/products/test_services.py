@@ -1,7 +1,9 @@
-import pytest
 import uuid
-from products.services.product_service import ProductService
+
+import pytest
+
 from products.models import Product
+from products.services.product_service import ProductService
 from tests.factories import product_to_create, products_to_create
 
 
@@ -19,14 +21,12 @@ class TestProductService:
     @pytest.fixture
     def created_products(self, service):
         products = products_to_create()
-        created_products = [
-            service.create_product(product)
-            for product in products
-        ]
+        created_products = [service.create_product(product) for product in products]
         return created_products
 
     def test_get_all_products_in_the_db(self, service, created_products):
-        assert len(created_products) == 7
+        seven = 7
+        assert len(created_products) == seven
         products = service.get_all_products()
         encontrou_produto = False
         for product in created_products:
@@ -44,28 +44,22 @@ class TestProductService:
     def test_get_product_by_id_exists(self, service, created_product):
         product = service.get_product_by_id(created_product.id)
         assert product is not None
-        assert product.name == "Test Product"
+        assert product.name == created_product.name
 
     def test_get_product_by_id_not_exists(self, service):
         product = service.get_product_by_id(uuid.uuid4())
         assert product is None
 
     def test_create_product(self, service):
-        data = {
-            "name": "New Product",
-            "price": 20.00,
-            "quantity": 50
-        }
+        data = {"name": "New Product", "price": 20.00, "quantity": 50}
         product = service.create_product(data)
         assert product.id is not None
-        assert product.name == "New Product"
+        assert product.name == data["name"]
 
     def test_update_product_exists(self, service, created_product):
         created_product.name = "Updated Product"
         created_product.price = 15.00
-        updated = service.update_product(
-            data_to_update=created_product.to_update()
-        )
+        updated = service.update_product(data_to_update=created_product.to_update())
         product_updated = Product(**updated[0])
         assert product_updated.name == created_product.name
         assert product_updated.quantity == created_product.quantity
@@ -76,13 +70,12 @@ class TestProductService:
         assert product_updated.updated_at >= created_product.updated_at
 
     def test_update_product_not_exists(self, service, created_product):
+        zero = 0
         created_product.name = "Updated Product"
         created_product.price = 15.00
         created_product.id = uuid.uuid4()
-        updated = service.update_product(
-            data_to_update=created_product.to_update()
-        )
-        assert len(updated) == 0
+        updated = service.update_product(data_to_update=created_product.to_update())
+        assert len(updated) == zero
 
     def test_delete_product_exists(self, service, created_product):
         result = service.delete_product(created_product.id)
@@ -97,5 +90,5 @@ class TestProductService:
         assert latest is not None
         assert latest[0].created_at >= latest[1].created_at
         assert latest.count() == 2
-        assert latest[0].name == "Test Product 7"
-        assert latest[1].name == "Test Product 6"
+        assert latest[0].name == created_products[6].name
+        assert latest[1].name == created_products[5].name

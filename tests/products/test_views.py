@@ -1,6 +1,8 @@
 import pytest
 from django.urls import reverse
+
 from products.models import Product
+
 
 @pytest.mark.django_db
 def test_product_list_view(client):

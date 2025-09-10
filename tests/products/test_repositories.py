@@ -1,10 +1,8 @@
-import pytest
-import pytz
 import uuid
-
 from datetime import datetime
 
-from django.core.exceptions import ObjectDoesNotExist
+import pytest
+import pytz
 
 from products.models import Product
 from products.repositories.product_repository import ProductRepository
@@ -12,7 +10,7 @@ from tests.factories import product_to_create, products_to_create
 
 
 @pytest.mark.django_db
-class TestProductRepository():
+class TestProductRepository:
     @pytest.fixture
     def repository(self):
         return ProductRepository()
@@ -25,15 +23,14 @@ class TestProductRepository():
     @pytest.fixture
     def created_products(self, repository):
         products = products_to_create()
-        created_products = [
-            repository.create(product) for product in products
-        ]
+        created_products = [repository.create(product) for product in products]
         return created_products
 
     def test_get_all(self, repository, created_products):
-        assert len(created_products) == 7
+        seven = 7
+        assert len(created_products) == seven
         products = repository.get_all()
-        assert products.count() == 7
+        assert products.count() == seven
         encontrou_produto = False
         for product in created_products:
             if products.first().id == product.id:
@@ -61,21 +58,21 @@ class TestProductRepository():
         product = repository.get_by_id(999)
         assert product is None
 
-    def test_create_product(self, repository, ):
-        product_new = {
-            'name': "New Product", 
-            'price': 20.00,
-            'quantity': 100
-        }
+    def test_create_product(
+        self,
+        repository,
+    ):
+        product_new = {"name": "New Product", "price": 20.00, "quantity": 100}
         product = repository.create(product_new)
+        total_products = 1
         assert product.id is not None
-        assert product.name == "New Product"
-        assert product.price == 20.0
-        assert product.quantity == 100
+        assert product.name == product_new["name"]
+        assert product.price == product_new["price"]
+        assert product.quantity == product_new["quantity"]
         current_time_utc = datetime.now(pytz.UTC)
         assert product.created_at < current_time_utc
         assert product.updated_at < current_time_utc
-        assert Product.objects.count() == 1
+        assert Product.objects.count() == total_products
 
     def test_update_product_exists(self, repository, created_product):
         updated = repository.get_by_id(created_product.id)
@@ -83,14 +80,14 @@ class TestProductRepository():
         updated.price = 15.0
         updated.quantity = 350
         products = repository.update(data_to_update=updated.to_update())
-        assert products[0]['id'] == created_product.id
-        assert products[0]['name'] == updated.name
-        assert products[0]['quantity'] == updated.quantity
-        assert products[0]['price'] == updated.price
+        assert products[0]["id"] == created_product.id
+        assert products[0]["name"] == updated.name
+        assert products[0]["quantity"] == updated.quantity
+        assert products[0]["price"] == updated.price
         current_time_utc = datetime.now(pytz.UTC)
         assert updated.created_at == created_product.created_at
-        assert products[0]['updated_at'] < current_time_utc
-        assert products[0]['updated_at'] > created_product.created_at
+        assert products[0]["updated_at"] < current_time_utc
+        assert products[0]["updated_at"] > created_product.created_at
 
     def test_update_product_not_exists(self, repository, created_product):
         created_product.id = uuid.uuid4()
@@ -99,8 +96,9 @@ class TestProductRepository():
 
     def test_delete_product_exists(self, repository, created_product):
         result = repository.delete(created_product.id)
+        total_products = 0
         assert result is True
-        assert Product.objects.count() == 0
+        assert Product.objects.count() == total_products
 
     def test_delete_product_not_exists(self, repository):
         result = repository.delete(uuid.uuid4())
@@ -111,5 +109,5 @@ class TestProductRepository():
 
         latest = repository.get_latest_products(2)
         assert latest.count() == 2
-        assert latest[0].name == "Test Product 7"
-        assert latest[1].name == "Test Product 6"
+        assert latest[0].name == created_products[6].name
+        assert latest[1].name == created_products[5].name
