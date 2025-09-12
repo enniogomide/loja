@@ -1,3 +1,5 @@
+
+from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.shortcuts import render
 # from django.views.generic import ListView, DetailView
@@ -9,11 +11,15 @@ from .services.product_service import ProductService
 class ProductListView(View):
     def get(self, request):
         service = ProductService()
-        template_name = "products/list.html"
+        # template_name = "products/list.html"
         products = service.get_all_products()
-        data = [{"name": p.name, "price": str(p.price)} for p in products]
-        return render(request, template_name, data)
-        # return JsonResponse(data, safe=False)
+        data = [
+            model_to_dict(product) | {
+                'id': product.id,
+                'created_at': product.created_at,
+                'updated_at': product.updated_at} for product in products]
+        # return render(request, template_name, data)
+        return JsonResponse(data, safe=False)
 
     def post(self, request):
         service = ProductService()

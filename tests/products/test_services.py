@@ -51,7 +51,7 @@ class TestProductService:
         assert product is None
 
     def test_create_product(self, service):
-        data = {"name": "New Product", "price": 20.00, "quantity": 50}
+        data = {"name": "New Product", "price": '20.00', "quantity": '50'}
         product = service.create_product(data)
         assert product.id is not None
         assert product.name == data["name"]
