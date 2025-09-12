@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from django.test import RequestFactory
+from django.test import Client, RequestFactory
 
 from products.models import Product
 from products.views import ProductDetailView, ProductListView
@@ -17,6 +17,10 @@ class TestProductListView:
     @pytest.fixture
     def rf(self):
         return RequestFactory()
+
+    @pytest.fixture
+    def client(self):
+        return Client()
 
     @pytest.fixture
     def created_product(self):
@@ -50,9 +54,9 @@ class TestProductListView:
                 '%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
             assert item['id'] == str(prod.id)
 
-    def test_post_creates_new_product(self, rf):
+    def test_post_creates_new_product(self, client):
         data = {'name': 'New Product', 'price': '20.00', 'quantity': 5}
-        request = rf.post('/products/', data)
+        request = client.post('/products/', data)
         response = ProductListView.as_view()(request)
 
         assert response.status_code == 201
@@ -60,14 +64,14 @@ class TestProductListView:
         assert response_data['name'] == 'New Product'
         assert Product.objects.count() == 1
 
-    def test_post_invalid_data(self, rf):
+    def test_post_invalid_data_missing_attributes(self, client):
         # Missing required field
         data = {'name': 'New Product'}
-        request = rf.post('/products/', data)
-        response = ProductListView.as_view()(request)
+        response = client.post('/products/', data)
 
         # This will depend on how you handle errors in your service
-        assert response.status_code in [400, 500]
+        assert response.status_code == 400
+        assert "Dados incompletos para criar o produto" in response.json()['error']
 
 
 @pytest.mark.django_db

@@ -5,6 +5,8 @@ from django.shortcuts import render
 # from django.views.generic import ListView, DetailView
 from django.views import View
 
+from core.middleware.exceptions import BusinessValidationError
+
 from .services.product_service import ProductService
 
 
@@ -22,9 +24,13 @@ class ProductListView(View):
         return JsonResponse(data, safe=False)
 
     def post(self, request):
+        breakpoint()
         service = ProductService()
-        product = service.create_product(request.POST.dict())
-        return JsonResponse({"id": product.id, "name": product.name}, status=201)
+        try:
+            product = service.create_product(request.POST.dict())
+            return JsonResponse({"id": product.id, "name": product.name}, status=201)
+        except BusinessValidationError as e:
+            return JsonResponse({"error": e.message}, status=e.code)
 
 
 class ProductDetailView(View):
